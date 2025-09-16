@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from actions import bp as actions_bp
 from android import bp as android_bp
 from filters import bp as filters_bp
@@ -19,7 +19,7 @@ app.register_blueprint(actions_bp)
 app.register_blueprint(android_bp)
 app.register_blueprint(filters_bp)
 
-@app.route('/images/', methods=['POST'])
+@app.route('/images', methods=['POST'])
 def upload_image():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -40,4 +40,11 @@ def upload_image():
         if file:
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
-            return jsonify({'filename': file.filename}), 200
+            return jsonify({'filename': file.filename}), 
+@app.route('/uploads/<filename>')
+def download_file(filename):
+    filename, filepath = get_secure_filename_filepath(filename)
+    if os.path.exists(filepath):
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    else:
+        return jsonify({'error': 'File not found'}), 404
