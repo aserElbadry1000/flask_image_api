@@ -1,11 +1,13 @@
-from flask import Blueprint
+from flask import Blueprint, request
+from PIL import Image
 
 bp = Blueprint('actions', __name__, url_prefix='/actions')
 
 
+
 @bp.route('/resize', methods=['POST'])
 def resize():
-    pass
+    filename = request.json['filename']
 
 @bp.route('/presets/<preset_name>', methods=['POST'])
 def preset(preset_name):
@@ -18,3 +20,4 @@ def rotate():
 @bp.route('/flip', methods=['POST'])
 def flip():
     pass
+
